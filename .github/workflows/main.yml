@@ -1,4 +1,4 @@
-name: cohort-back
+name: cohort-api
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
     steps:
       - id: metadata
         run: |
-          IMAGE=arkhn/cohort-back
+          IMAGE=arkhn/cohort-api
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
           # Has this workflow been triggered by an api tag ?
@@ -66,7 +66,7 @@ jobs:
           push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: |
-            com.arkhn.image.title=cohort-back
+            com.arkhn.image.title=cohort-api
             com.arkhn.image.description=${{ github.event.repository.description }}
             com.arkhn.image.url=${{ github.event.repository.html_url }}
             com.arkhn.image.source=${{ github.event.repository.clone_url }}
