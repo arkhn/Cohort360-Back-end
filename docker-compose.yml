@@ -11,6 +11,9 @@ services:
       - "5432:5432"
   web:
     build: .
+    environment:
+      - DJANGO_DEBUG=1
+      - DJANGO_ALLOWED_HOSTS="localhost 127.0.0.1"
     ports:
       - "8000:8000"
     depends_on:
