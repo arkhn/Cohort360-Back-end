@@ -79,8 +79,8 @@ AUTHENTICATION_BACKENDS = [
 # OIDC_TOKEN_USE_BASIC_AUTH = True
 # OIDC_RP_SIGN_ALGO = "RS256"
 # OIDC_OP_JWKS_ENDPOINT = os.getenv("OIDC_OP_JWKS_ENDPOINT")
-LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL")
-LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL")
+# LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL")
+# LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL")
 
 ROOT_URLCONF = "cohort_back.urls"
 
@@ -157,13 +157,13 @@ AUTH_USER_MODEL = "cohort.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-        "cohort.permissions.AllowOptionsAuthentication",
+        # "rest_framework.permissions.IsAuthenticated",
+        # "cohort.permissions.AllowOptionsAuthentication",
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": [
         # "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
         # "cohort.AuthMiddleware.CustomAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
