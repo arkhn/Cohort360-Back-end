@@ -40,7 +40,6 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
-    # "mozilla_django_oidc",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -52,6 +51,7 @@ INSTALLED_APPS = [
     "cohort.apps.CohortConfig",
     "explorations",
     "voting",
+    "mozilla_django_oidc",
 ]
 
 MIDDLEWARE = [
@@ -67,20 +67,19 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    # "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
-    # "cohort.backends.AuthBackend",
+    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
 ]
 
-# OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
-# OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
-# OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv("OIDC_OP_AUTHORIZATION_ENDPOINT")
-# OIDC_OP_TOKEN_ENDPOINT = os.getenv("OIDC_OP_TOKEN_ENDPOINT")
-# OIDC_OP_USER_ENDPOINT = os.getenv("OIDC_OP_USER_ENDPOINT")
-# OIDC_TOKEN_USE_BASIC_AUTH = True
-# OIDC_RP_SIGN_ALGO = "RS256"
-# OIDC_OP_JWKS_ENDPOINT = os.getenv("OIDC_OP_JWKS_ENDPOINT")
-# LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL")
-# LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL")
+OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv("OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = os.getenv("OIDC_OP_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = os.getenv("OIDC_OP_USER_ENDPOINT")
+OIDC_TOKEN_USE_BASIC_AUTH = True
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_OP_JWKS_ENDPOINT = os.getenv("OIDC_OP_JWKS_ENDPOINT")
+LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL")
+LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL")
 
 ROOT_URLCONF = "cohort_back.urls"
 
@@ -157,22 +156,17 @@ AUTH_USER_MODEL = "cohort.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
-        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAuthenticated",
         # "cohort.permissions.AllowOptionsAuthentication",
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
-        # "cohort.AuthMiddleware.CustomAuthentication",
-        # "rest_framework.authentication.SessionAuthentication",
+        "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "PAGE_SIZE": 10,
 }
-
-JWT_SERVER_URL = "https://url/"
-JWT_SIGNING_KEY = None
-JWT_ALGORITHM = "HS256"
 
 SWAGGER_SETTINGS = {
     "LOGOUT_URL": "/accounts/logout/",
@@ -193,7 +187,7 @@ LOGGING = {
             "handlers": ["console"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
         },
-        # "mozilla_django_oidc": {"handlers": ["console"], "level": "DEBUG"},
+        "mozilla_django_oidc": {"handlers": ["console"], "level": "DEBUG"},
     },
 }
 
