@@ -1,23 +1,8 @@
-from uuid import uuid4
-
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin, Permission
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 
-from cohort.auth import IDServer
 from cohort_back.models import BaseModel
-
-
-def get_or_create_user(jwt_access_token):
-    user_info = IDServer.user_info(jwt_access_token=jwt_access_token)
-    user = UserManager().create_simple_user(
-        username=user_info['username'],
-        email=user_info['email'],
-        displayname=user_info['displayname'][:50],
-        firstname=user_info['firstname'][:30],
-        lastname=user_info['lastname'][:30],
-    )
-    return user
 
 
 class UserManager(BaseUserManager):
