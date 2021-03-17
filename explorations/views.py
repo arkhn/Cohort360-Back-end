@@ -1,11 +1,20 @@
+import re
+from collections import OrderedDict
+
 import coreapi
 import coreschema
+import django_filters
+from rest_framework.filters import OrderingFilter as RestOrderingFilter
 from django.http import QueryDict
+from django.utils.itercompat import is_iterable
+from django_filters import BaseCSVFilter, ChoiceFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.schemas import AutoSchema
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -17,17 +26,57 @@ from explorations.serializers import RequestSerializer, CohortResultSerializer, 
     RequestQuerySnapshotSerializer, DatedMeasureSerializer
 
 
+class CohortFilter(django_filters.FilterSet):
+    def perimeter_filter(self, queryset, field, value):
+        return queryset.filter(request_query_snapshot__perimeters_ids__contains=[value])
+
+    def perimeters_filter(self, queryset, field, value):
+        return queryset.filter(request_query_snapshot__perimeters_ids__contains=value.split(","))
+
+    name = django_filters.CharFilter(field_name='name', lookup_expr="contains")
+    perimeter_id = django_filters.CharFilter(method="perimeter_filter")
+    perimeters_ids = django_filters.CharFilter(method="perimeters_filter")
+    min_result_size = django_filters.NumberFilter(field_name='dated_measure__measure', lookup_expr='gte')
+    max_result_size = django_filters.NumberFilter(field_name='dated_measure__measure', lookup_expr='lte')
+    # ?min_created_at=2015-04-23
+    min_fhir_datetime = django_filters.DateTimeFilter(field_name='dated_measure__fhir_datetime', lookup_expr="gte")
+    max_fhir_datetime = django_filters.DateTimeFilter(field_name='dated_measure__fhir_datetime', lookup_expr="lte")
+    request_job_status = django_filters.AllValuesMultipleFilter()
+    type = django_filters.AllValuesMultipleFilter()
+
+    class Meta:
+        model = CohortResult
+        fields = (
+            "request_job_status",
+            "name",
+            "perimeter_id",
+            "min_result_size",
+            "max_result_size",
+            "min_fhir_datetime",
+            "max_fhir_datetime",
+            "favorite",
+            "type",
+            "perimeters_ids",
+            "fhir_group_id"
+        )
+
+
 class CohortResultViewSet(NestedViewSetMixin, UserObjectsRestrictedViewSet):
     queryset = CohortResult.objects.all()
     serializer_class = CohortResultSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
     lookup_field = "uuid"
 
-    filterset_fields = ('uuid', 'name', 'favorite', 'request_query_snapshot_id',
-                        'request_id', 'fhir_group_id', 'type')
-    ordering_fields = ('created_at', 'modified_at',
-                       'name', 'favorite', 'type')
-    ordering = ('-created_at',)
+    filter_class = CohortFilter
+    ordering_fields = (
+        "name",
+        ("result_size", "dated_measure__measure"),
+        ("fhir_datetime", "dated_measure__fhir_datetime"),
+        "type",
+        "favorite",
+        "request_job_status"
+    )
+    # ordering = ('-created_at',)
     search_fields = ('$name', '$description',)
 
     def get_permissions(self):
@@ -76,6 +125,9 @@ class CohortResultViewSet(NestedViewSetMixin, UserObjectsRestrictedViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        return super(CohortResultViewSet, self).list(request, *args, **kwargs)
 
 
 class DatedMeasureViewSet(NestedViewSetMixin, UserObjectsRestrictedViewSet):
