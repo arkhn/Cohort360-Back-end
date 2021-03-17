@@ -5,7 +5,7 @@ django-filter==2.2.0
 coreapi==2.3.3
 djangorestframework_simplejwt==4.4.0
 django-rest-swagger==2.2.0
-django-cors-headers==2.5.2
+django-cors-headers==3.5.0
 pyjwt==1.7.1
 drf-extensions==0.6.0
 django-extensions==3.0.9
@@ -14,3 +14,6 @@ Celery==4.4.*
 redis==3.3.*
 
 psycopg2==2.8.*
+mozilla-django-oidc==1.2.4
+
+uWSGI==2.0.19.1
