@@ -5,9 +5,9 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.conf import settings
 
 from cohort.views import BaseViewSet
-from cohort_back.settings import VOTING_GITLAB
 from voting.celery import get_or_create_gitlab_issue
 from voting.filters import ContainsFilter, ListContainsFilter
 from voting.models import Vote, GitlabIssue
@@ -55,9 +55,9 @@ class IssuePost(GenericAPIView):
             if request.user.displayname else 'Unknown'
         label = request.data['label']
 
-        if label not in VOTING_GITLAB['post_labels']:
+        if label not in settings.VOTING_GITLAB['post_labels']:
             return Response({'error': 'label "{}" not authorized, choices are: "{}"'.format(
-                label, ','.join(VOTING_GITLAB['post_labels']))},
+                label, ','.join(settings.VOTING_GITLAB['post_labels']))},
                 status=status.HTTP_400_BAD_REQUEST)
 
         if len(title) == 0 or len(description) == 0:
