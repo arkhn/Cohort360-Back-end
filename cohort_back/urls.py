@@ -27,7 +27,7 @@ from voting.views import IssuePost, Thumbs, GitlabIssueViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'voting/issues', GitlabIssueViewSet)
+# router.register(r'voting/issues', GitlabIssueViewSet)
 
 schema_view = get_swagger_view(title='Cohort360 API')
 
@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^docs/', schema_view),
     url(r'^accounts/', include('rest_framework.urls')),
     url(r'^search/criteria/$', SearchCriteria.as_view(), name="search_criteria"),
-    url(r'^voting/create_issue', IssuePost.as_view(), name='voting_issues'),
-    url(r'^voting/thumbs', Thumbs.as_view(), name='voting_thumbs'),
+    # url(r'^voting/create_issue', IssuePost.as_view(), name='voting_issues'),
+    # url(r'^voting/thumbs', Thumbs.as_view(), name='voting_thumbs'),
     # url(r'^groups/<str:name>/add/<str:username>$', SearchCriteria.as_view(), name="search_criteria"),
 ]
