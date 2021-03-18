@@ -16,9 +16,9 @@ class UserIdentityMiddleware:
             try:
                 user = UserModel.objects.get(username=username)
             except UserModel.DoesNotExist:
-                pass
-            else:
-                request.user = user
-                login(request, user)
+                user = UserModel.objects.create(username=username, is_active=True)
+
+            request.user = user
+            login(request, user)
 
         return self.get_response(request)
