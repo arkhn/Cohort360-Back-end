@@ -20,7 +20,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_swagger",
     "corsheaders",
-    "mozilla_django_oidc",
     "cohort.apps.CohortConfig",
     "explorations",
     "voting",
