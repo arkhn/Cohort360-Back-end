@@ -59,11 +59,7 @@ RUN useradd --no-log-init -g uwsgi uwsgi
 COPY --chown=uwsgi:uwsgi --from=compile-image /srv/venv /srv/venv
 
 COPY --chown=uwsgi:uwsgi ["docker-entrypoint.sh", "uwsgi.ini", "manage.py", "/srv/"]
-COPY --chown=uwsgi:uwsgi cohort /srv/cohort
-COPY --chown=uwsgi:uwsgi cohort_back /srv/cohort_back
-COPY --chown=uwsgi:uwsgi explorations /srv/explorations
-COPY --chown=uwsgi:uwsgi voting /srv/voting
-COPY --chown=uwsgi:uwsgi tests /srv/tests
+COPY --chown=uwsgi:uwsgi . /srv
 RUN chmod +x docker-entrypoint.sh
 
 ENV FILES_ROOT /var/www
