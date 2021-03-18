@@ -6,7 +6,7 @@ from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
 # from cohort.import_i2b2 import get_unique_patient_count_from_org_union
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cohort_back.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cohort_back.settings.prod')
 
 app = Celery('cohort_back')
 
