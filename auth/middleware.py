@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 
 
 UserModel = get_user_model()
@@ -19,5 +19,6 @@ class UserIdentityMiddleware:
                 pass
             else:
                 request.user = user
+                login(request, user)
 
         return self.get_response(request)
