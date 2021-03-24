@@ -1,6 +1,5 @@
+from corsheaders.defaults import default_headers
 import os
-
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -9,6 +8,9 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "username",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
