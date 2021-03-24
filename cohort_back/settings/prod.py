@@ -11,11 +11,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-from urllib.parse import urlparse
-
-from rest_framework.request import Request
-
-from cohort_back.FhirAPi import FhirCountResponse, FhirCohortResponse, FhirValidateResponse
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,15 +18,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "secret")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.getenv("DJANGO_DEBUG", 0)))
+DEBUG = os.environ.get("DEBUG", False) == "True"
 
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-
-ALLOWED_HOSTS = [urlparse(url).netloc for url in os.getenv("DJANGO_ALLOWED_HOSTS", "").split(" ")]
-CORS_ALLOWED_ORIGINS = os.getenv("DJANGO_CORS_ALLOWED_ORIGINS", "http://localhost http://127.0.0.1").split(" ")
+ALLOWED_HOSTS = ["*"]
+CORS_ALLOW_ALL_ORIGINS = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -51,7 +44,6 @@ INSTALLED_APPS = [
     "cohort.apps.CohortConfig",
     "explorations",
     "voting",
-    "mozilla_django_oidc",
 ]
 
 MIDDLEWARE = [
@@ -63,23 +55,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "mozilla_django_oidc.middleware.SessionRefresh",
+    "auth.middleware.UserIdentityMiddleware",
 ]
-
-AUTHENTICATION_BACKENDS = [
-    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
-]
-
-OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
-OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
-OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv("OIDC_OP_AUTHORIZATION_ENDPOINT")
-OIDC_OP_TOKEN_ENDPOINT = os.getenv("OIDC_OP_TOKEN_ENDPOINT")
-OIDC_OP_USER_ENDPOINT = os.getenv("OIDC_OP_USER_ENDPOINT")
-OIDC_TOKEN_USE_BASIC_AUTH = True
-OIDC_RP_SIGN_ALGO = "RS256"
-OIDC_OP_JWKS_ENDPOINT = os.getenv("OIDC_OP_JWKS_ENDPOINT")
-LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL")
-LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL")
 
 ROOT_URLCONF = "cohort_back.urls"
 
@@ -110,8 +87,8 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB", "cohort"),
         "USER": os.getenv("POSTGRES_USER", "postgres"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "password"),
-        "HOST": os.getenv("POSTGRES_HOST", "db"),
-        "PORT": os.getenv("POSTGRES_PORT", 5432),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+        "PORT": int(os.getenv("POSTGRES_PORT", 5432)),
     }
 }
 
@@ -150,7 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/path/to/static/"
+STATIC_ROOT = os.environ.get("STATIC_ROOT", "var/www/static")
 
 AUTH_USER_MODEL = "cohort.User"
 
@@ -160,9 +137,9 @@ REST_FRAMEWORK = {
         # "cohort.permissions.AllowOptionsAuthentication",
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "PAGE_SIZE": 10,
@@ -187,13 +164,12 @@ LOGGING = {
             "handlers": ["console"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
         },
-        "mozilla_django_oidc": {"handlers": ["console"], "level": "DEBUG"},
     },
 }
 
 # Celery
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://broker:6379"
+CELERY_RESULT_BACKEND = "redis://broker:6379"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
@@ -219,28 +195,3 @@ VOTING_GITLAB = {
     "authorized_labels": ["To Do", "Doing", "Feature request", "Bug request"],
     "post_labels": ["Bug request", "Feature request"],
 }
-
-
-# called to format a json query stored in RequestQuerySnapshot to the format read by Fhir API
-def format_json_request(json_req: str) -> str:
-    raise NotImplementedError()
-
-
-# called when a request is about to be made to external Fhir API
-def get_fhir_authorization_header(request: Request) -> dict:
-    raise NotImplementedError()
-
-
-# called to ask a Fhir API to compute the size of a cohort given the request in the json_file
-def post_count_cohort(json_file: str, auth_headers) -> FhirCountResponse:
-    raise NotImplementedError()
-
-
-# called to ask a Fhir API to create a cohort given the request in the json_file
-def post_create_cohort(json_file: str, auth_headers) -> FhirCohortResponse:
-    raise NotImplementedError()
-
-
-# called to ask a Fhir API to validate the format of the json_file
-def post_validate_cohort(json_file: str, auth_headers) -> FhirValidateResponse:
-    raise NotImplementedError()

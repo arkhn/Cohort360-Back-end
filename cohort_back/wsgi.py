@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cohort_back.settings')
+ENV = os.environ.get("ENV", "prod")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"cohort_back.settings.{ENV}")
 
 application = get_wsgi_application()
