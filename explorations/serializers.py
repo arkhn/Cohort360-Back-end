@@ -93,14 +93,14 @@ class RequestQuerySnapshotSerializer(BaseSerializer):
         except json.JSONDecodeError as e:
             raise serializers.ValidationError(f"Serialized_query could not be recognized as json: {e.msg}")
 
-        # post_validate_cohort is called this way so that fhir_api can be mocked in tests
-        validate_resp = fhir_api.post_validate_cohort(
-            format_json_request(serialized_query),
-            get_fhir_authorization_header(self.context.get("request"))
-        )
-        if not validate_resp.success:
-            raise serializers.ValidationError(f"Serialized_query, after formatting, "
-                                              f"is not accepted by FHIR server: {validate_resp.err_msg}")
+        # # post_validate_cohort is called this way so that fhir_api can be mocked in tests
+        # validate_resp = fhir_api.post_validate_cohort(
+        #     format_json_request(serialized_query),
+        #     get_fhir_authorization_header(self.context.get("request"))
+        # )
+        # if not validate_resp.success:
+        #     raise serializers.ValidationError(f"Serialized_query, after formatting, "
+        #                                       f"is not accepted by FHIR server: {validate_resp.err_msg}")
 
         validated_data["perimeters_ids"] = retrieve_perimeters(serialized_query)
 

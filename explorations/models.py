@@ -8,7 +8,7 @@ from cohort.models import User
 from django.db import models
 
 from cohort_back.models import BaseModel
-from cohort_back.settings import format_json_request
+# from cohort_back.settings import format_json_request
 
 PENDING_REQUEST_STATUS = "pending"
 STARTED_REQUEST_STATUS = "started"
@@ -115,11 +115,11 @@ class RequestQuerySnapshot(BaseModel):
     def generate_measure(self, auth_headers):
         dm = self.create_empty_dated_measure()
 
-        # import explorations.tasks as tasks
-        # task = tasks.get_count_task.delay(auth_headers, format_json_request(str(self.serialized_query)), dm.uuid)
-        from explorations.tasks import get_count_task
-        task = get_count_task.delay(auth_headers, format_json_request(str(self.serialized_query)), dm.uuid)
-        dm.count_task_id = task.id
+        # # import explorations.tasks as tasks
+        # # task = tasks.get_count_task.delay(auth_headers, format_json_request(str(self.serialized_query)), dm.uuid)
+        # from explorations.tasks import get_count_task
+        # task = get_count_task.delay(auth_headers, format_json_request(str(self.serialized_query)), dm.uuid)
+        # dm.count_task_id = task.id
         dm.save()
 
         return dm
@@ -148,12 +148,12 @@ class RequestQuerySnapshot(BaseModel):
         )
         cr.save()
 
-        # import explorations.tasks as tasks
-        # task = tasks.create_cohort_task.delay(auth_headers, format_json_request(str(self.serialized_query)), cr.uuid)
-        from explorations.tasks import create_cohort_task
-        task = create_cohort_task.delay(auth_headers, format_json_request(str(self.serialized_query)), cr.uuid)
-        cr.create_task_id = task.id
-        cr.save()
+        # # import explorations.tasks as tasks
+        # # task = tasks.create_cohort_task.delay(auth_headers, format_json_request(str(self.serialized_query)), cr.uuid)
+        # from explorations.tasks import create_cohort_task
+        # task = create_cohort_task.delay(auth_headers, format_json_request(str(self.serialized_query)), cr.uuid)
+        # cr.create_task_id = task.id
+        # cr.save()
 
         return cr
 
