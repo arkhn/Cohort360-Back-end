@@ -70,13 +70,14 @@ class CohortResultViewSet(NestedViewSetMixin, UserObjectsRestrictedViewSet):
     filter_class = CohortFilter
     ordering_fields = (
         "name",
+        "created_at",
         ("result_size", "dated_measure__measure"),
         ("fhir_datetime", "dated_measure__fhir_datetime"),
         "type",
         "favorite",
         "request_job_status"
     )
-    # ordering = ('-created_at',)
+    ordering = ('-created_at',)
     search_fields = ('$name', '$description',)
 
     def get_permissions(self):
